@@ -1,28 +1,13 @@
-##kb = byts / 1024
-#mb = kb / 1024
-#gb = mb / 1024
-#tb = gb / 1024
-#print(f"байт: {byts:.10f}\n"
-#     f"килобайе: {kb:.10f}\n"
-#     f"мегабайт: {mb:.10f}\n"
-#     f"гигабат: {gb:.10f}\n"
-#     f"террабайт: {tb:.10f}")
-
-try:
-    bit = float(input("напишите колличество бит"))
-except ValueError:
-        print("Error enter bytes")
-        exit()
-user_choise = int(input(f"Choose\n"
-            f"1.KB\n"
-            f"2.MB\n"
-            f"3.GB\n"
-            f"4.TB"))
-units = {1: (1024, "KB"),
-         2: (1024**2, "MB"),
-         3: (1024**3, "GB"),
-         4: (1024**4, "TB")}
-if user_choise in units:
-    divider, units_name = units[user_choise]
-    res = bit / divider
-    print(res)
+import sys
+def password_question():
+    password = input("ведите пароль")
+    global byts
+    byts = sys.getsizeof(password)
+def print_size():
+    print(f"kb - {byts / 8 / 1024}\n"
+        f"mb - {byts / 8 / 1024 / 1024}\n"
+        f"gb - {byts / 8 / 1024 / 1024 / 1024}\n"
+        f"tb - {byts / 8 / 1024 / 1024 / 1024 / 1024}\n")
+while True:
+    password_question()
+    print_size()
