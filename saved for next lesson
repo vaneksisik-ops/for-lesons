@@ -1,0 +1,12 @@
+a = int(input("строчки"))
+b = int(input("символо"))
+z = int(input("1 -, 2 - "))
+x = int(input("колиро"))
+c = a * b
+v = c * x
+n = v / 8
+m = n / 1024
+if z == 1:
+   print(m * 2)
+else:
+   print(m)
