@@ -1,12 +1,11 @@
-a = int(input("строчки"))
-b = int(input("символо"))
-z = int(input("1 -, 2 - "))
-x = int(input("колиро"))
-c = a * b
-v = c * x
-n = v / 8
-m = n / 1024
-if z == 1:
-   print(m * 2)
-else:
-   print(m)
+rows, colms = 5,5
+matrix = [["*" for i in range(colms)] for i in range(rows)]
+
+matrix = [["0" if (c == 2 or r == 2) else "*" for c in range(colms)] for r in range(rows)]
+
+
+
+for row in matrix:
+    for item in row:
+        print(item, end=" ")
+    print()
