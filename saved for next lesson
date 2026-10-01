@@ -1,10 +1,25 @@
-rows, colms = 5,5
-matrix = [["*" for i in range(colms)] for i in range(rows)]
+rows = 5
+cols = 5
 
-matrix = [["0" if (c == 2 or r == 2) else "*" for c in range(colms)] for r in range(rows)]
+matrix = []
 
+# Заполнение матрицы циклом
+for r in range(rows):
+    row = []
+    for c in range(cols):
+        if r % 2 == 0 and c % 2 == 0:
+            row.append(".")
+        elif r == c:
+            row.append(".")
+        elif r == 1 and c == 3:
+            row.append(".")
+        elif r == 3 and c == 1:
+            row.append(".")
+        else:
+            row.append("*")
+    matrix.append(row)
 
-
+# Старый (ваш) способ вывода на экран
 for row in matrix:
     for item in row:
         print(item, end=" ")
