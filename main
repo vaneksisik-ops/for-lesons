@@ -66,7 +66,6 @@ def questions():
     num_adults = int(input("Здравствуйте! Спасибо, что пришли, подскажите, сколько в вашей компании взрослых: "))
     num_children = int(input("И скажите, пожалуйста, сколько у вас детей: "))
     account = input("ведите ник вашего аккаунта, если аккаунта нет и вы не хотите его создавать то просто нажмите энтр, а если хотите создать нажмите 1 ")
-def new_account():
     if account == 1:
         new_account_name = input("спаибо сто создаёте аккаунт! введите ник который хотите присвоить аккаунту(без пробелов)")
         users.append(new_account_name)
@@ -77,6 +76,7 @@ total_price = 0
 total_items_count = 0
 
 def menu ():
+    global total_price, total_items_count
     if num_adults == 0:
         print("Извините, мы обслуживаем людей, только если присутствуют взрослые")
 
@@ -133,20 +133,21 @@ def menu ():
         total_price += get_price(drinks_prices, item_id)
         total_items_count += 1
 
-
-if num_adults > 0 and total_items_count > 0:
-    print(f"Общая сумма вашего заказа: {total_price} руб.")
-
-
-    waiting_minutes = total_items_count * 1
-    real_delay_seconds = waiting_minutes * 5
-
-    print(waiting_minutes)
-    print("Приступаем к готовке")
-    time.sleep(real_delay_seconds)
-    print("Ваш заказ готов!")
+def cooking ():
+    global num_adults, num_children, account
+    if num_adults > 0 and total_items_count > 0:
+        print(f"Общая сумма вашего заказа: {total_price} руб.")
 
 
+        waiting_minutes = total_items_count * 1
+        real_delay_seconds = waiting_minutes * 5
+
+        print(waiting_minutes)
+        print("Приступаем к готовке")
+        time.sleep(real_delay_seconds)
+        print("Ваш заказ готов!")
+
+def pay ():
     payment_method = input("Чем будете оплачивать? (1 - наличные, 2 - карта) ")
 
     if payment_method == "1":
@@ -158,3 +159,8 @@ if num_adults > 0 and total_items_count > 0:
             print("Этих денег недостаточно для оплаты заказа.")
     else:
         print("Оплата картой прошла успешно! Спасибо, что посетили нас!")
+
+questions()
+menu()
+cooking()
+pay()
