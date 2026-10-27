@@ -58,17 +58,23 @@ def get_price(menu_prices, item_id):
         if item_id in d:
             return d[item_id]
 
-users = {}
+users = []
 
 
 def questions():
     global num_adults, num_children, account
     num_adults = int(input("Здравствуйте! Спасибо, что пришли, подскажите, сколько в вашей компании взрослых: "))
     num_children = int(input("И скажите, пожалуйста, сколько у вас детей: "))
-    account = input("ведите ник вашего аккаунта, если аккаунта нет и вы не хотите его создавать то просто нажмите энтр, а если хотите создать нажмите 1 ")
-    if account == 1:
+    global account_name_ask
+    account_name_ask = input("ведите ник вашего аккаунта, если аккаунта нет и вы не хотите его создавать то просто нажмите энтр, а если хотите создать нажмите 1 ")
+    if account_name_ask == "1":
         new_account_name = input("спаибо сто создаёте аккаунт! введите ник который хотите присвоить аккаунту(без пробелов)")
-        users.append(new_account_name)
+        new_account_password = input("Введите пароль вашего аккаунта")
+        new_user = {
+            "username": new_account_name,
+            "password": new_account_password
+        }
+        users.append(new_user)
     with open("users.json", "w", encoding="utf-8") as file:
             json.dump(users, file, ensure_ascii=False, indent=4)
 
