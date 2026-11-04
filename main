@@ -43,10 +43,6 @@ drinks_menu = [
     {6: "Банановый смузи — 290 руб."}
 ]
 
-
-
-
-
 adult_prices = [{0: 650}, {1: 450}, {2: 490}, {3: 2400}, {4: 1900}, {5: 950}, {6: 850}, {7: 550}, {8: 480}, {9: 690},
                 {10: 580}, {11: 380}, {12: 420}]
 kids_prices = [{0: 250}, {1: 280}, {2: 310}, {3: 290}, {4: 380}, {5: 320}, {6: 340}, {7: 280}, {8: 240}, {9: 190},
@@ -58,25 +54,57 @@ def get_price(menu_prices, item_id):
         if item_id in d:
             return d[item_id]
 
-users = []
+with open("users.json", "r", encoding="utf-8") as file:
+    users = json.load(file)
 
+current_user = None
 
-def questions():
-    global num_adults, num_children, account
-    num_adults = int(input("Здравствуйте! Спасибо, что пришли, подскажите, сколько в вашей компании взрослых: "))
-    num_children = int(input("И скажите, пожалуйста, сколько у вас детей: "))
-    global account_name_ask
+def view_orders():
+    print()
+    with open("orders.json", "r", encoding="utf-8") as file:
+        orders = json.load(file)
+    for idx, o in enumerate(orders, 1):
+        print(f"Заказ №{idx} | Пользователь: {o['user']} | Взрослых: {o['adults']}, Детей: {o['children']} | Блюд: {o['items_count']} | Сумма: {o['total_price']} руб.")
+
+def auth():
+    global current_user
     account_name_ask = input("ведите ник вашего аккаунта, если аккаунта нет и вы не хотите его создавать то просто нажмите энтр, а если хотите создать нажмите 1 ")
+    
     if account_name_ask == "1":
         new_account_name = input("спаибо сто создаёте аккаунт! введите ник который хотите присвоить аккаунту(без пробелов)")
         new_account_password = input("Введите пароль вашего аккаунта")
+        
         new_user = {
             "username": new_account_name,
             "password": new_account_password
         }
         users.append(new_user)
-    with open("users.json", "w", encoding="utf-8") as file:
+        with open("users.json", "w", encoding="utf-8") as file:
             json.dump(users, file, ensure_ascii=False, indent=4)
+        current_user = new_account_name
+        print(f"Аккаунт {current_user} успешно создан и авторизован!")
+        
+    elif account_name_ask.strip() != "":
+        password_ask = input("Введите пароль вашего аккаунта: ")
+        user_found = None
+        for u in users:
+            if u["username"] == account_name_ask:
+                user_found = u
+                break
+        
+        if user_found["password"] == password_ask:
+            current_user = account_name_ask
+            print(f"Вы успешно вошли как {current_user}!")
+            if current_user == "vaneksisik" and password_ask == "123":
+                view_orders()
+    else:
+        current_user = "Гость"
+
+def questions():
+    global num_adults, num_children
+    num_adults = int(input("Здравствуйте! Спасибо, что пришли, подскажите, сколько в вашей компании взрослых: "))
+    num_children = int(input("И скажите, пожалуйста, сколько у вас детей: "))
+    auth()
 
 total_price = 0
 total_items_count = 0
@@ -85,8 +113,9 @@ def menu ():
     global total_price, total_items_count
     if num_adults == 0:
         print("Извините, мы обслуживаем людей, только если присутствуют взрослые")
+        return
 
-    elif num_children == 0:
+    if num_children == 0:
         print()
         print("взрослое меню -", adult_menu)
         print()
@@ -94,12 +123,11 @@ def menu ():
 
         print("Введите через пробел или запятую номер блюд из взрослого меню, которые хотите заказать:")
         only_adult_order_input = input()
-        only_adult_order = list(map(int, only_adult_order_input.replace(',', ' ').split()))
+        only_adult_order = list(map(int, only_adult_order_input.replace(',', ' ').split())) if only_adult_order_input.strip() else []
 
         print("ведите через пробел или запятую номер напитков, которые хотите заказать (если не нужно, нажмите Enter):")
         drinks_order_input = input()
         drinks_order = list(map(int, drinks_order_input.replace(',', ' ').split())) if drinks_order_input.strip() else []
-
 
         for item_id in only_adult_order:
             total_price += get_price(adult_prices, item_id)
@@ -128,22 +156,35 @@ def menu ():
         drinks_order_input = input()
         drinks_order = list(map(int, drinks_order_input.replace(',', ' ').split())) if drinks_order_input.strip() else []
 
+        for item_id in adult_order:
+            total_price += get_price(adult_prices, item_id)
+            total_items_count += 1
+        for item_id in kids_order:
+            total_price += get_price(kids_prices, item_id)
+            total_items_count += 1
+        for item_id in drinks_order:
+            total_price += get_price(drinks_prices, item_id)
+            total_items_count += 1
 
-    for item_id in adult_order:
-        total_price += get_price(adult_prices, item_id)
-        total_items_count += 1
-    for item_id in kids_order:
-        total_price += get_price(kids_prices, item_id)
-        total_items_count += 1
-    for item_id in drinks_order:
-        total_price += get_price(drinks_prices, item_id)
-        total_items_count += 1
+def save_order_to_file():
+    with open("orders.json", "r", encoding="utf-8") as file:
+        orders = json.load(file)
+    
+    new_order = {
+        "user": current_user,
+        "adults": num_adults,
+        "children": num_children,
+        "total_price": total_price,
+        "items_count": total_items_count
+    }
+    orders.append(new_order)
+    with open("orders.json", "w", encoding="utf-8") as file:
+        json.dump(orders, file, ensure_ascii=False, indent=4)
 
 def cooking ():
-    global num_adults, num_children, account
+    global num_adults, num_children
     if num_adults > 0 and total_items_count > 0:
         print(f"Общая сумма вашего заказа: {total_price} руб.")
-
 
         waiting_minutes = total_items_count * 1
         real_delay_seconds = waiting_minutes * 5
@@ -152,6 +193,7 @@ def cooking ():
         print("Приступаем к готовке")
         time.sleep(real_delay_seconds)
         print("Ваш заказ готов!")
+        save_order_to_file()
 
 def pay ():
     payment_method = input("Чем будете оплачивать? (1 - наличные, 2 - карта) ")
