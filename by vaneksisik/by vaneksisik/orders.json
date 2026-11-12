@@ -1,0 +1,16 @@
+[
+    {
+        "user": "vaneksisik",
+        "adults": 1,
+        "children": 0,
+        "total_price": 450,
+        "items_count": 1
+    },
+    {
+        "user": "q",
+        "adults": 1,
+        "children": 0,
+        "total_price": 680,
+        "items_count": 2
+    }
+]
