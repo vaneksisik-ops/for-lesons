@@ -1,5 +1,9 @@
 import os
 import json
+import hashlib
+import os
+import tempfile
+import pyzipper
 
 adult_menu = [
     {0: "Том Ям — 650 руб."},
@@ -85,17 +89,18 @@ def view_orders():
 
 def auth():
     global current_user
-    account_name_ask = input(
-        "Введите ник вашего аккаунта, если аккаунта нет и вы не хотите его создавать то просто нажмите энтр, а если хотите создать нажмите 1 ")
+    account_name_ask = input("Введите ник вашего аккаунта, если аккаунта нет и вы не хотите его создавать то просто нажмите энтр, а если хотите создать нажмите 1 ")
 
     if account_name_ask == "1":
         new_account_name = input(
             "Спасибо что создаёте аккаунт! Введите ник который хотите присвоить аккаунту (без пробелов): ")
         new_account_password = input("Введите пароль вашего аккаунта: ")
 
+        encode_password_new = new_account_password.encode("utf-8")
+        hesh_password = hashlib.sha256(encode_password_new).hexdigest()
         new_user = {
             "username": new_account_name,
-            "password": new_account_password
+            "password": hesh_password
         }
         users.append(new_user)
         with open("users.json", "w", encoding="utf-8") as file:
@@ -104,33 +109,31 @@ def auth():
         print(f"Аккаунт {current_user} успешно создан и авторизован!")
 
     elif account_name_ask.strip() != "":
-        password_ask = input("Введите пароль вашего аккаунта: ")
+        password_ask_first = input("Введите пароль вашего аккаунта: ")
+        encode_password = password_ask_first.encode("utf-8")
+        password_ask = hashlib.sha256(encode_password).hexdigest()
         user_found = None
         for u in users:
             if u["username"] == account_name_ask:
                 user_found = u
                 break
 
+
         if user_found is not None:
-            if user_found["password"] == password_ask:
+            if user_found == "vaneksisik" and password_ask == "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3":
+                print("вы успешно вошли как администратор")
+            elif user_found["password"] == password_ask:
                 current_user = account_name_ask
                 print(f"Вы успешно вошли как {current_user}!")
-                if current_user == "vaneksisik" and password_ask == "123":
-                    view_orders()
             else:
                 print("Неверный пароль!")
                 current_user = "аноним"
+
         else:
-            if account_name_ask == "vaneksisik" and password_ask == "123":
-                current_user = "vaneksisik"
-                print(f"Вы успешно вошли как {current_user}!")
-                view_orders()
-            else:
                 print("Пользователь не найден!")
                 current_user = "аноним"
     else:
         current_user = "аноним"
-
 
 def questions():
     global num_adults, num_children
@@ -219,16 +222,13 @@ def save_order_to_file():
     with open("orders.json", "w", encoding="utf-8") as file:
         json.dump(orders, file, ensure_ascii=False, indent=4)
 
-
 def cooking():
     global num_adults, num_children
     if num_adults > 0 and total_items_count > 0:
         print("\nВаш заказ принят и отправлен на кухню! Повара уже начали готовить.")
         save_order_to_file()
-        print(f"Итоговая сумма заказа: {total_price} руб. Спасибо за заказ!")
+        print(f"Итоговая сумма заказа {total_price}. Спасибо за заказ!")
 
-
-
-    questions()
-    menu()
-    cooking()
+questions()
+menu()
+cooking()
