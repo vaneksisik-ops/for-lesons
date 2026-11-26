@@ -1,0 +1,58 @@
+def decor(input_func):
+    def output_func():
+        print(25 * "*")
+        input_func()
+        print(25 * "*")
+    return output_func
+
+
+
+def show_welcome():
+    print("РОБОТ ПИЦЦЕМЕЙКЕР ЗАПУЩЕН")
+
+
+def show_menu():
+    print(f"Выберите действие : \n"
+          f"1 - Cделать новую пиццу \n"
+          f"2 - Посмотреть статус и запасы \n"
+          f"3 - Пополнить запасы продуктов \n"
+          f"0 - Выключить робота ")
+
+
+def show_status(state):
+    print(f"___ТЕКУЩИЙ СТАТУС РОБОТА___\n"
+          f"Состояние - {state["status"]}\n"
+          f"Температура - {state["temperature"]} oC\n"
+          f"Выполнено заказов - {state["orders_completed"]}\n"
+          f"Остатки ингредиентов -")
+    for items, count in state["ingredients"].items():
+        print(f' - {items.capitalize()} : {count} ед.')
+
+
+def ask_menu_choice():
+    return int(input("Ваш выбор - "))
+
+
+def ask_toppings(available_toppings):
+    print(f'Доступные топинги -  {", ". join(available_toppings)}\n'
+          f'Введите нужные ингредиенты через запятую или нажмите enter')
+    raw_input = input("> ").strip().lower()
+    if not raw_input:
+        return []
+    return [item.strip() for item in raw_input.split(",")]
+
+
+def show_message(message):
+    print(f'[ИНФО] - {message}')
+
+
+
+def show_error(error_message):
+    print(f'[ОШИБКА] - {error_message}')
+
+
+
+def show_finished_pizza(ingredients_list):
+    print(f'Пицца готова !\n'
+          f'Состав - {', '.join(ingredients_list)}.\n'
+          f'Приятного аппетита')
